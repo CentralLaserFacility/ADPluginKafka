@@ -27,15 +27,17 @@ LIB_SRCS += ParameterHandler.cpp
 
 DBD += ADPluginKafka.dbd
 
+
 LIB_LIBS += NDPlugin
 LIB_LIBS += rdkafka++ rdkafka
 
-RDKAFKA = /usr/local
+RDKAFKA = C:\epics\vcpkg\installed\x64-windows
+rdkafka_DIR += $(RDKAFKA)/lib
+rdkafka++_DIR += $(RDKAFKA)/lib
 
-rdkafka_DIR = $(RDKAFKA)/lib
-rdkafka++_DIR = $(RDKAFKA)/lib
-
-USR_CXXFLAGS += -I${AREA_DETECTOR}/ADCore/include
+USR_INCLUDES += -I$(RDKAFKA)/include
+USR_INCLUDES += -I${AREA_DETECTOR}/ADCore/include
+#USR_CXXFLAGS += -I${RDKAFKA}/include
 USR_CXXFLAGS += -std=c++11
 
 ifneq ($(findstring static,$(EPICS_HOST_ARCH)),)
