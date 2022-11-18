@@ -38,7 +38,7 @@ ReconnectFlush, ReconnectFlush_RBV | `bool` (0 or 1) | `false` | Tells the plugi
 ReconnectFlushTime, ReconnectFlushTime_RBV | `int` | `500` [ms] | The (maximum) amount of time in ms to wait (block) for a flush to finish if _ReconnectFlush_ is set to `true`.
 KafkaBufferSize, KafkaBufferSize_RBV | `int` | `500000` [kb] | The maximum kafka message buffer size in kb. Note that this setting has a higher priority than _KafkaMaxQueueSize_. Changing this value will trigger a disconnect and re-connect of the Kafka connection.
 KafkaMaxMessageSize, KafkaMaxMessageSize_RBV | `int` | `10000000` [b]| The maximum accepted message size (of individual flatbuffer messages) in bytes. Changing this value will trigger a disconnect and re-connect of the Kafka connection.
-UnsentPackets_RBV | `int` | n/a | The number of (flatbuffer) messages lost/dropped due to connection issues with the Kafka broker. Note that we will only start dropping (permanently loosing) messages when the message buffer is full.
+UnsentPackets_RBV | `int` | n/a | The number of (flatbuffer) messages lost/dropped due to connection issues with the Kafka broker. Note that we will only start dropping (permanently losing) messages when the message buffer is full.
 ConnectionStatus_RBV | `enum` | n/a | The current Kafka connection status of the plugin. Can take the values "Connected" (0), "Connecting" (1), "Disconnected" (2), "Error" (3).
 ConnectionMessage_RBV | `string` | n/a | The current connection status in the form of a string. For easier debugging of connection issues.
 KafkaTopic, KafkaTopic_RBV | `string` | n/a | The Kafka topic to which the flatbufffer messages are to be transmitted. Can not be an empty string.
