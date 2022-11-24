@@ -9,6 +9,7 @@
 #include "Parameter.h"
 #include <asynPortDriver.h>
 #include <map>
+#include <stdexcept>
 
 class ParameterHandler {
 public:
