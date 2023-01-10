@@ -55,9 +55,6 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
 
   // Iterate over attributes, next(ptr) returns NULL when there are no more
   for (NDAttribute *attr_ptr = pArray.pAttributeList->next(nullptr); attr_ptr != nullptr; attr_ptr = pArray.pAttributeList->next(attr_ptr)) {
-    auto temp_attr_str = builder.CreateString(attr_ptr->getName());
-    auto temp_attr_desc = builder.CreateString(attr_ptr->getDescription());
-    auto temp_attr_src = builder.CreateString(attr_ptr->getSource());
     size_t bytes;
     NDAttrDataType_t c_type;
     int result = attr_ptr->getValueInfo(&c_type, &bytes);
@@ -74,6 +71,11 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
     {
       continue;
     }
+
+    auto temp_attr_str = builder.CreateString(attr_ptr->getName());
+    auto temp_attr_desc = builder.CreateString(attr_ptr->getDescription());
+    auto temp_attr_src = builder.CreateString(attr_ptr->getSource());
+
     auto attrValuePayload = builder.CreateVector(
         reinterpret_cast<unsigned char *>(attrValueBuffer.get()), bytes);
 
