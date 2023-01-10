@@ -60,7 +60,11 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
     auto temp_attr_src = builder.CreateString(attr_ptr->getSource());
     size_t bytes;
     NDAttrDataType_t c_type;
-    attr_ptr->getValueInfo(&c_type, &bytes);
+    int result = attr_ptr->getValueInfo(&c_type, &bytes);
+    if ((ND_SUCCESS != result) | (0 == bytes))
+    {
+      continue;
+    }
     auto attrDType = GetFB_DType(c_type);
 
     std::unique_ptr<char[]> attrValueBuffer(new char[bytes]);
