@@ -70,17 +70,16 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
     std::unique_ptr<char[]> attrValueBuffer(new char[bytes]);
     int attrValueRes = attr_ptr->getValue(
         c_type, reinterpret_cast<void *>(attrValueBuffer.get()), bytes);
-    if (ND_SUCCESS == attrValueRes) {
-      auto attrValuePayload = builder.CreateVector(
-          reinterpret_cast<unsigned char *>(attrValueBuffer.get()), bytes);
-
-      auto attr = CreateAttribute(builder, temp_attr_str, temp_attr_desc,
-                                  temp_attr_src, attrDType, attrValuePayload);
-      attrVec.push_back(attr);
-    } else {
-      assert(false);
+    if (ND_SUCCESS != attrValueRes)
+    {
+      continue;
     }
+    auto attrValuePayload = builder.CreateVector(
+        reinterpret_cast<unsigned char *>(attrValueBuffer.get()), bytes);
 
+    auto attr = CreateAttribute(builder, temp_attr_str, temp_attr_desc,
+                                temp_attr_src, attrDType, attrValuePayload);
+    attrVec.push_back(attr);
   }
   auto attributes = builder.CreateVector(attrVec);
   auto Timestamp = epicsTimeToNsec(pArray.epicsTS);
