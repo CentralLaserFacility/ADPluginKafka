@@ -53,11 +53,8 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
   // Get all attributes of this data package
   std::vector<flatbuffers::Offset<Attribute>> attrVec;
 
-  // When passing NULL, get first element
-  NDAttribute *attr_ptr = pArray.pAttributeList->next(nullptr);
-
-  // Itterate over attributes, next(ptr) returns NULL when there are no more
-  while (attr_ptr != nullptr) {
+  // Iterate over attributes, next(ptr) returns NULL when there are no more
+  for (NDAttribute *attr_ptr = pArray.pAttributeList->next(nullptr); attr_ptr != nullptr; attr_ptr = pArray.pAttributeList->next(attr_ptr)) {
     auto temp_attr_str = builder.CreateString(attr_ptr->getName());
     auto temp_attr_desc = builder.CreateString(attr_ptr->getDescription());
     auto temp_attr_src = builder.CreateString(attr_ptr->getSource());
@@ -80,7 +77,6 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
       assert(false);
     }
 
-    attr_ptr = pArray.pAttributeList->next(attr_ptr);
   }
   auto attributes = builder.CreateVector(attrVec);
   auto Timestamp = epicsTimeToNsec(pArray.epicsTS);
