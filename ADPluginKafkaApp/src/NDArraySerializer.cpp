@@ -58,7 +58,7 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
     size_t bytes;
     NDAttrDataType_t c_type;
     int result = attr_ptr->getValueInfo(&c_type, &bytes);
-    if ((ND_SUCCESS != result) | (0 == bytes))
+    if ((ND_SUCCESS != result) || (0 == bytes))
     {
       continue;
     }
