@@ -53,34 +53,35 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
   // Get all attributes of this data package
   std::vector<flatbuffers::Offset<Attribute>> attrVec;
 
-  // When passing NULL, get first element
-  NDAttribute *attr_ptr = pArray.pAttributeList->next(nullptr);
-
-  // Itterate over attributes, next(ptr) returns NULL when there are no more
-  while (attr_ptr != nullptr) {
-    auto temp_attr_str = builder.CreateString(attr_ptr->getName());
-    auto temp_attr_desc = builder.CreateString(attr_ptr->getDescription());
-    auto temp_attr_src = builder.CreateString(attr_ptr->getSource());
+  // Iterate over attributes, next(ptr) returns NULL when there are no more
+  for (NDAttribute *attr_ptr = pArray.pAttributeList->next(nullptr); attr_ptr != nullptr; attr_ptr = pArray.pAttributeList->next(attr_ptr)) {
     size_t bytes;
     NDAttrDataType_t c_type;
-    attr_ptr->getValueInfo(&c_type, &bytes);
+    int result = attr_ptr->getValueInfo(&c_type, &bytes);
+    if ((ND_SUCCESS != result) || (NDAttrUndefined == c_type))
+    {
+      continue;
+    }
     auto attrDType = GetFB_DType(c_type);
 
     std::unique_ptr<char[]> attrValueBuffer(new char[bytes]);
     int attrValueRes = attr_ptr->getValue(
         c_type, reinterpret_cast<void *>(attrValueBuffer.get()), bytes);
-    if (ND_SUCCESS == attrValueRes) {
-      auto attrValuePayload = builder.CreateVector(
-          reinterpret_cast<unsigned char *>(attrValueBuffer.get()), bytes);
-
-      auto attr = CreateAttribute(builder, temp_attr_str, temp_attr_desc,
-                                  temp_attr_src, attrDType, attrValuePayload);
-      attrVec.push_back(attr);
-    } else {
-      assert(false);
+    if (ND_SUCCESS != attrValueRes)
+    {
+      continue;
     }
 
-    attr_ptr = pArray.pAttributeList->next(attr_ptr);
+    auto temp_attr_str = builder.CreateString(attr_ptr->getName());
+    auto temp_attr_desc = builder.CreateString(attr_ptr->getDescription());
+    auto temp_attr_src = builder.CreateString(attr_ptr->getSource());
+
+    auto attrValuePayload = builder.CreateVector(
+        reinterpret_cast<unsigned char *>(attrValueBuffer.get()), bytes);
+
+    auto attr = CreateAttribute(builder, temp_attr_str, temp_attr_desc,
+                                temp_attr_src, attrDType, attrValuePayload);
+    attrVec.push_back(attr);
   }
   auto attributes = builder.CreateVector(attrVec);
   auto Timestamp = epicsTimeToNsec(pArray.epicsTS);
