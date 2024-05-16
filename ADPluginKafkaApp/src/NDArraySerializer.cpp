@@ -39,9 +39,14 @@ void NDArraySerializer::SerializeData(NDArray &pArray,
   auto SourceNamePtr = builder.CreateString(SourceName);
 
   std::vector<std::uint64_t> tempDims;
-  for (size_t y = 0; y < pArray.ndims; y++) {
-    tempDims.push_back(pArray.dims[y].size);
+
+  tempDims.push_back(pArray.dims[ndInfo.yDim].size);
+  tempDims.push_back(pArray.dims[ndInfo.xDim].size);
+
+  if(pArray.ndims>2) {
+    tempDims.push_back(pArray.dims[ndInfo.colorDim].size);
   }
+
   auto dims = builder.CreateVector(tempDims);
   auto dType = GetFB_DType(pArray.dataType);
 
